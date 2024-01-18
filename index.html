@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game XO</title>
+  <style>
+    .game {
+      margin: 60px auto;
+      max-width: 210px;
+    }
+
+    .wrapper--cells {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      width: 210px;
+      height: 210px;
+    }
+
+    .wrapper--reset {
+      text-align: center;
+    }
+
+    .button {
+      width: 70px;
+      height: 70px;
+      font-size: xx-large;
+      cursor: pointer;
+    }
+
+    .reset {
+      display: inline-block;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const SYMBOLS = {
+      X: 'x',
+      O: 'o',
+    };
+
+    const STYLES = {
+      X: 'style--x',
+      O: 'style--o',
+      WINNER: 'style--w',
+      BLOCKED: 'style--b'
+    };
+
+    const App = () => {
+      const [cells, setCells] = React.useState(new Array(9).fill(null));
+      const [currentSymbol, setCurrentSymbol] = React.useState(SYMBOLS.X);
+      const [winSequence, setWinSequence] = React.useState(null);
+
+      const handlerCellClick = (idx) => {
+        setCells(cells.map((cell, i) => i === idx ? currentSymbol : cell));
+        setCurrentSymbol(currentSymbol === SYMBOLS.X ? SYMBOLS.O : SYMBOLS.X);
+      };
+
+      const handlerReset = () => {
+        setCells(new Array(9).fill(null));
+        setCurrentSymbol(SYMBOLS.X);
+        setWinSequence(null);
+      };
+
+      const isGameOver = null;
+      const winner = null;
+      const stepsQuantity = cells.reduce((sum, el) => el !== null ? sum + 1 : sum, 0);
+      const hasNextStep = stepsQuantity < 9;
+      const isWinner = Boolean(winSequence);
+
+      return (
+        <div className='game'>
+          {hasNextStep && <h1 className='Header'>Next Step: <span>{currentSymbol.toUpperCase()}</span></h1>}
+          {!isWinner && !hasNextStep && <h1 className='Header'>Parity</h1>}
+          <div className="wrapper--cells">
+            {cells.map((el, i) => (
+              <button
+                type='button'
+                className='button'
+                disabled={isWinner || !hasNextStep && STYLES.BLOCKED}
+                key={i}
+                onClick={() => handlerCellClick(i)}
+              >
+                {el && el.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <div className="wrapper--reset">
+            <button type='button' className="reset" onClick={handlerReset}>Reset</button>
+          </div>
+        </div >
+      );
+    };
+
+
+    const domContainer = document.querySelector('#root');
+    const root = ReactDOM.createRoot(domContainer);
+    root.render(<App />);
+  </script>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</body>
+
+</html>
