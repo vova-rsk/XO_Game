@@ -99,6 +99,18 @@
           });
       };
 
+      const getTitle = (hasStep, isWin) => {
+        if (hasStep) {
+          return `Next step: <span>${currentSymbol.toUpperCase()}</span>`;
+        }
+
+        if (isWin) {
+          return `Winner: <span>${cells[winSequence[0]].toUpperCase()}</span>`;
+        }
+
+        return 'Parity';
+      };
+
       const isWinCell = (i) => {
         if (!winSequence) return;
         return winSequence.includes(i) ? STYLES.WINNER : '';
@@ -122,9 +134,7 @@
 
       return (
         <div className='game'>
-          {hasNextStep && <h1 className='header'>Next step: <span>{currentSymbol.toUpperCase()}</span></h1>}
-          {!isWinner && !hasNextStep && <h1 className='header'>Parity</h1>}
-          {isWinner && <h1 className='header'>Winner: <span>{cells[winSequence[0]].toUpperCase()}</span></h1>}
+          <h1 className='header'>{getTitle(hasNextStep, isWinner)}</h1>
           <div className="wrapper--cells">
             {cells.map((el, i) => (
               <button
