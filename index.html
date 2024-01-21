@@ -139,8 +139,7 @@
               <GameCell
                 key={i}
                 title={cell}
-                winnerCellStyle={winSequence && winSequence.includes(i) ? STYLES.WINNER : ''}
-                titleStyle={cell && STYLES[cell.toUpperCase()]}
+                isWinnerCell={winSequence && winSequence.includes(i)}
                 isDisabled={isWinner || !hasNextStep || cell && STYLES.BLOCKED}
                 clickHandler={() => handlerCellClick(i)}
               />
@@ -163,11 +162,11 @@
       );
     }
 
-    function GameCell({ title, winnerCellStyle, titleStyle, isDisabled, clickHandler }) {
+    function GameCell({ title, isWinnerCell, isDisabled, clickHandler }) {
       return (
         <button
           type='button'
-          className={`button--cell ${titleStyle} ${winnerCellStyle}`}
+          className={`button--cell ${title && STYLES[title.toUpperCase()]} ${isWinnerCell && STYLES.WINNER}`}
           disabled={isDisabled}
           onClick={clickHandler}
         >
