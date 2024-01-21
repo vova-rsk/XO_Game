@@ -37,8 +37,20 @@
 
     .button--reset {
       display: inline-block;
-      padding: 4px 8px;
+      padding: 8px 48px;
+      font-size: 12px;
+      background-color: #fff;
       cursor: pointer;
+      border: 1px solid gray;
+      border-radius: 4px;
+    }
+
+    .button--reset:hover {
+      background-color: #f3f3f3;
+    }
+
+    .button--reset:active {
+      background-color: lightgrey;
     }
 
     .style--x {
@@ -50,7 +62,7 @@
     }
 
     .style--w {
-      background-color: burlywood;
+      background-color: lightgreen;
     }
   </style>
 </head>
@@ -99,18 +111,6 @@
           });
       };
 
-      const getTitle = (hasStep, isWin) => {
-        if (hasStep) {
-          return `Next step: <span>${currentSymbol.toUpperCase()}</span>`;
-        }
-
-        if (isWin) {
-          return `Winner: <span>${cells[winSequence[0]].toUpperCase()}</span>`;
-        }
-
-        return 'Parity';
-      };
-
       const isWinCell = (i) => {
         if (!winSequence) return;
         return winSequence.includes(i) ? STYLES.WINNER : '';
@@ -127,14 +127,14 @@
         setWinSequence(null);
       };
 
-      const isGameOver = null;
       const stepsQuantity = cells.reduce((sum, el) => el !== null ? sum + 1 : sum, 0);
       const isWinner = Boolean(winSequence);
       const hasNextStep = stepsQuantity < 9 && !isWinner;
+      const winner = isWinner ? cells[winSequence[0]] : null;
 
       return (
         <div className='game'>
-          <h1 className='header'>{getTitle(hasNextStep, isWinner)}</h1>
+          <GameInfo winner={winner} activeSymbol={currentSymbol} hasSteps={hasNextStep} />
           <div className="wrapper--cells">
             {cells.map((el, i) => (
               <button
@@ -154,6 +154,22 @@
         </div >
       );
     };
+
+    function GameInfo({ winner = null, activeSymbol = SYMBOLS.X, hasSteps = true, }) {
+      const getTitle = (hasStep, isWin, activeSymbol) => {
+        if (hasStep) {
+          return `Next step: ${activeSymbol.toUpperCase()}`;
+        }
+
+        if (winner) {
+          return `Winner: ${winner && winner.toUpperCase()}`;
+        }
+
+        return 'Parity';
+      };
+
+      return <h1 className='header'>{getTitle(hasSteps, winner, activeSymbol)}</h1>
+    }
 
     const domContainer = document.querySelector('#root');
     const root = ReactDOM.createRoot(domContainer);
