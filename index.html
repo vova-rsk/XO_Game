@@ -111,11 +111,6 @@
           });
       };
 
-      const isWinCell = (i) => {
-        if (!winSequence) return;
-        return winSequence.includes(i) ? STYLES.WINNER : '';
-      };
-
       const handlerCellClick = (idx) => {
         setCells(cells.map((cell, i) => i === idx ? currentSymbol : cell));
         setCurrentSymbol(currentSymbol === SYMBOLS.X ? SYMBOLS.O : SYMBOLS.X);
@@ -134,18 +129,21 @@
 
       return (
         <div className='game'>
-          <GameInfo winner={winner} activeSymbol={currentSymbol} hasSteps={hasNextStep} />
+          <GameInfo
+            winner={winner}
+            activeSymbol={currentSymbol}
+            hasSteps={hasNextStep}
+          />
           <div className="wrapper--cells">
-            {cells.map((el, i) => (
-              <button
-                type='button'
-                className={`button--cell ${el && STYLES[el.toUpperCase()]} ${isWinCell(i)}`}
-                disabled={isWinner || !hasNextStep || el && STYLES.BLOCKED}
+            {cells.map((cell, i) => (
+              <GameCell
                 key={i}
-                onClick={() => handlerCellClick(i)}
-              >
-                {el && el.toUpperCase()}
-              </button>
+                title={cell}
+                winnerCellStyle={winSequence && winSequence.includes(i) ? STYLES.WINNER : ''}
+                titleStyle={cell && STYLES[cell.toUpperCase()]}
+                isDisabled={isWinner || !hasNextStep || cell && STYLES.BLOCKED}
+                clickHandler={() => handlerCellClick(i)}
+              />
             ))}
           </div>
           <div className="wrapper--reset">
@@ -153,7 +151,7 @@
           </div>
         </div >
       );
-    };
+    }
 
     function GameInfo({ winner = null, activeSymbol = SYMBOLS.X, hasSteps = true, }) {
       return (
@@ -163,6 +161,19 @@
           {!hasSteps && !winner && 'Parity!'}
         </h1>
       );
+    }
+
+    function GameCell({ title, winnerCellStyle, titleStyle, isDisabled, clickHandler }) {
+      return (
+        <button
+          type='button'
+          className={`button--cell ${titleStyle} ${winnerCellStyle}`}
+          disabled={isDisabled}
+          onClick={clickHandler}
+        >
+          {title && title.toUpperCase()}
+        </button>
+      )
     }
 
     const domContainer = document.querySelector('#root');
