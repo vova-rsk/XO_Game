@@ -138,7 +138,7 @@
             {cells.map((cell, i) => (
               <GameCell
                 key={i}
-                title={cell}
+                symbol={cell}
                 isWinnerCell={winSequence && winSequence.includes(i)}
                 isDisabled={isWinner || !hasNextStep || cell && STYLES.BLOCKED}
                 clickHandler={() => handlerCellClick(i)}
@@ -162,17 +162,21 @@
       );
     }
 
-    function GameCell({ title, isWinnerCell, isDisabled, clickHandler }) {
+    function GameCell({ symbol, isWinnerCell, isDisabled, clickHandler }) {
       return (
         <button
           type='button'
-          className={`button--cell ${title && STYLES[title.toUpperCase()]} ${isWinnerCell && STYLES.WINNER}`}
+          className={`button--cell ${isWinnerCell ? STYLES.WINNER : ''}`}
           disabled={isDisabled}
           onClick={clickHandler}
         >
-          {title && title.toUpperCase()}
+          {symbol && <GameSymbol symbol={symbol} />}
         </button>
       )
+    }
+
+    function GameSymbol({ symbol }) {
+      return <span className={symbol && STYLES[symbol.toUpperCase()]}>{symbol && symbol.toUpperCase()}</ span>;
     }
 
     const domContainer = document.querySelector('#root');
