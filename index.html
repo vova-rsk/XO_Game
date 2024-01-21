@@ -156,19 +156,13 @@
     };
 
     function GameInfo({ winner = null, activeSymbol = SYMBOLS.X, hasSteps = true, }) {
-      const getTitle = (hasStep, isWin, activeSymbol) => {
-        if (hasStep) {
-          return `Next step: ${activeSymbol.toUpperCase()}`;
-        }
-
-        if (winner) {
-          return `Winner: ${winner && winner.toUpperCase()}`;
-        }
-
-        return 'Parity';
-      };
-
-      return <h1 className='header'>{getTitle(hasSteps, winner, activeSymbol)}</h1>
+      return (
+        <h1 className='header'>
+          {hasSteps && `Next step: ${activeSymbol.toUpperCase()}`}
+          {winner && `Winner: ${winner && winner.toUpperCase()}`}
+          {!hasSteps && !winner && 'Parity!'}
+        </h1>
+      );
     }
 
     const domContainer = document.querySelector('#root');
