@@ -8,7 +8,9 @@
   <style>
     .game {
       margin: 60px auto;
+      padding: 40px;
       max-width: 210px;
+      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     }
 
     .header {
@@ -22,6 +24,7 @@
       margin-bottom: 20px;
       width: 210px;
       height: 210px;
+      box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
     }
 
     .wrapper--reset {
@@ -51,6 +54,10 @@
 
     .button--reset:active {
       background-color: lightgrey;
+    }
+
+    .symbol {
+      margin-left: 6px;
     }
 
     .style--x {
@@ -88,7 +95,7 @@
       DIAGONAL: [[0, 4, 8], [2, 4, 6]]
     };
 
-    const App = () => {
+    function useGameState() {
       const [cells, setCells] = React.useState(new Array(9).fill(null));
       const [currentSymbol, setCurrentSymbol] = React.useState(SYMBOLS.X);
       const [winSequence, setWinSequence] = React.useState(null);
@@ -97,7 +104,7 @@
         checkWinSequence();
       }, cells);
 
-      const checkWinSequence = () => {
+      function checkWinSequence() {
         Object.values(WIN_SEQUENCES)
           .flat(1)
           .forEach(el => {
@@ -109,7 +116,7 @@
               return;
             }
           });
-      };
+      }
 
       const handlerCellClick = (idx) => {
         setCells(cells.map((cell, i) => i === idx ? currentSymbol : cell));
@@ -122,10 +129,21 @@
         setWinSequence(null);
       };
 
+      return {
+        cells,
+        currentSymbol,
+        winSequence,
+        winner: Boolean(winSequence) ? cells[winSequence[0]] : null,
+        handlerCellClick,
+        handlerReset
+      };
+    }
+
+    const App = () => {
+      const { cells, currentSymbol, winSequence, winner, handlerCellClick, handlerReset } = useGameState();
+
       const stepsQuantity = cells.reduce((sum, el) => el !== null ? sum + 1 : sum, 0);
-      const isWinner = Boolean(winSequence);
-      const hasNextStep = stepsQuantity < 9 && !isWinner;
-      const winner = isWinner ? cells[winSequence[0]] : null;
+      const hasNextStep = stepsQuantity < 9 && !winner;
 
       return (
         <div className='game'>
@@ -140,7 +158,7 @@
                 key={i}
                 symbol={cell}
                 isWinnerCell={winSequence && winSequence.includes(i)}
-                isDisabled={isWinner || !hasNextStep || cell && STYLES.BLOCKED}
+                isDisabled={winner || !hasNextStep || cell && STYLES.BLOCKED}
                 clickHandler={() => handlerCellClick(i)}
               />
             ))}
@@ -153,11 +171,23 @@
     }
 
     function GameInfo({ winner = null, activeSymbol = SYMBOLS.X, hasSteps = true, }) {
+      if (!hasSteps && !winner) {
+        return <h1 className='header'>Parity!</h1>;
+      }
+
+      if (hasSteps) {
+        return (
+          <h1 className='header'>
+            Next step:
+            <GameSymbol symbol={activeSymbol} />
+          </h1>
+        );
+      }
+
       return (
         <h1 className='header'>
-          {hasSteps && `Next step: ${activeSymbol.toUpperCase()}`}
-          {winner && `Winner: ${winner && winner.toUpperCase()}`}
-          {!hasSteps && !winner && 'Parity!'}
+          Winner:
+          <GameSymbol symbol={winner} />
         </h1>
       );
     }
@@ -176,7 +206,11 @@
     }
 
     function GameSymbol({ symbol }) {
-      return <span className={symbol && STYLES[symbol.toUpperCase()]}>{symbol && symbol.toUpperCase()}</ span>;
+      return (
+        <span className={symbol && STYLES[symbol.toUpperCase()]}>
+          {symbol && symbol.toUpperCase()}
+        </ span>
+      );
     }
 
     const domContainer = document.querySelector('#root');
